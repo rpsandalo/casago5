@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CasaGo - Aluguel por temporada de casas e experiências</title>
+    <link rel="stylesheet" href="style-corrigido.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay hidden" id="loading-overlay">
+        <div class="loading-spinner"></div>
+        <p>Carregando...</p>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <!-- Logo -->
+            <div class="logo" onclick="window.location.reload()">
+                <div class="logo-icon">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="#009639">
+                        <path d="M16 1L3 9v14c0 8 13 8 13 8s13 0 13-8V9L16 1z"/>
+                        <path d="M16 10c2.2 0 4 1.8 4 4s-1.8 4-4 4-4-1.8-4-4 1.8-4 4-4z" fill="white"/>
+                    </svg>
+                </div>
+                <span class="logo-text">CasaGo</span>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <div class="search-button" id="search-toggle">
+                    <div class="search-field" id="where-field">
+                        <label>Para onde?</label>
+                        <input type="text" placeholder="Buscar destinos" id="where-input" autocomplete="off">
+                        <div class="suggestions-dropdown hidden" id="suggestions-dropdown">
+                            <!-- Suggestions will be populated here -->
+                        </div>
+                    </div>
+                    <div class="search-divider"></div>
+                    <div class="search-field" id="checkin-field">
+                        <label>Check-in</label>
+                        <input type="date" id="checkin-input">
+                    </div>
+                    <div class="search-divider"></div>
+                    <div class="search-field" id="checkout-field">
+                        <label>Check-out</label>
+                        <input type="date" id="checkout-input">
+                    </div>
+                    <div class="search-divider"></div>
+                    <div class="search-field" id="guests-field">
+                        <label>Hóspedes</label>
+                        <div class="guests-selector">
+                            <span id="guests-display">2 hóspedes</span>
+                            <div class="guests-dropdown hidden" id="guests-dropdown">
+                                <div class="guest-counter">
+                                    <span>Adultos</span>
+                                    <div class="counter">
+                                        <button type="button" id="adults-minus">-</button>
+                                        <span id="adults-count">2</span>
+                                        <button type="button" id="adults-plus">+</button>
+                                    </div>
+                                </div>
+                                <div class="guest-counter">
+                                    <span>Crianças</span>
+                                    <div class="counter">
+                                        <button type="button" id="children-minus">-</button>
+                                        <span id="children-count">0</span>
+                                        <button type="button" id="children-plus">+</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="search-action-button" id="search-button">
+                    <i class="fas fa-search"></i>
+                    <span>Buscar</span>
+                </button>
+            </div>
+
+            <!-- User Menu -->
+            <div class="user-menu">
+                <button class="host-button" id="host-button">Seja um host</button>
+                <div class="profile-menu">
+                    <button class="profile-button" id="profile-button" onclick="ProfileMenu.show()">
+                        <i class="fas fa-bars"></i>
+                        <i class="fas fa-user-circle"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Date Summary -->
+    <div id="date-summary" class="date-summary hidden">
+        <div class="summary-content">
+            <div class="summary-text">
+                <span id="summary-dates">Selecione suas datas</span>
+                <span id="summary-nights"></span>
+            </div>
+            <div class="summary-actions">
+                <button class="btn-clear" id="clear-dates">Limpar</button>
+                <button class="btn-confirm" id="confirm-dates">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-content">
+                <h1>Encontre acomodações únicas no Brasil</h1>
+                <p>Alugue casas, apartamentos e experiências inesquecíveis com anfitriões locais em mais de 900 cidades brasileiras.</p>
+            </div>
+        </section>
+
+        <!-- Properties Grid -->
+        <section class="properties-section">
+            <div class="section-header">
+                <h2>Propriedades em destaque</h2>
+                <div class="view-toggle">
+                    <button class="view-btn active" data-view="grid"><i class="fas fa-th"></i></button>
+                    <button class="view-btn" data-view="list"><i class="fas fa-list"></i></button>
+                </div>
+            </div>
+            <div class="properties-grid" id="properties-grid">
+                <!-- Properties will be dynamically loaded here -->
+            </div>
+        </section>
+
+        <!-- Categories Section -->
+        <section class="categories-section">
+            <h2>Explore por tipo de estadia</h2>
+            <div class="categories-grid">
+                <div class="category-card" data-category="praia">
+                    <div class="category-image">
+                        <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&h=200&fit=crop&q=80" alt="Praia">
+                    </div>
+                    <h3>Praia</h3>
+                    <p>Relaxe à beira-mar</p>
+                </div>
+                <div class="category-card" data-category="montanha">
+                    <div class="category-image">
+                        <img src="https://images.unsplash.com/photo-1464822759844-d150baec93ad?w=300&h=200&fit=crop&q=80" alt="Montanha">
+                    </div>
+                    <h3>Montanhas</h3>
+                    <p>Ar puro e natureza</p>
+                </div>
+                <div class="category-card" data-category="cidade">
+                    <div class="category-image">
+                        <img src="https://images.unsplash.com/photo-1514565131-fce0801e5785?w=300&h=200&fit=crop&q=80" alt="Cidade">
+                    </div>
+                    <h3>Cidades</h3>
+                    <p>Vida urbana vibrante</p>
+                </div>
+                <div class="category-card" data-category="campo">
+                    <div class="category-image">
+                        <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=300&h=200&fit=crop&q=80" alt="Campo">
+                    </div>
+                    <h3>Campo</h3>
+                    <p>Tranquilidade rural</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Property Modal -->
+    <div id="property-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="property-modal-title"></h2>
+                <button class="modal-close" id="property-modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-content">
+                <div id="property-modal-content">
+                    <!-- Property details will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Modal -->
+    <div id="booking-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Reservar Propriedade</h2>
+                <button class="modal-close" id="booking-modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-content">
+                <div id="booking-modal-content">
+                    <!-- Booking form will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div id="payment-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Pagamento</h2>
+                <button class="modal-close" id="payment-modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-content">
+                <div id="payment-modal-content">
+                    <!-- Payment options will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Host Modal -->
+    <div id="host-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Cadastrar Propriedade</h2>
+                <button class="modal-close" id="host-modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-content">
+                <div id="host-modal-content">
+                    <!-- Host form will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>CasaGo</h3>
+                <ul>
+                    <li><a href="#about">Sobre nós</a></li>
+                    <li><a href="#careers">Carreiras</a></li>
+                    <li><a href="#press">Imprensa</a></li>
+                    <li><a href="#blog">Blog</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Comunidade</h3>
+                <ul>
+                    <li><a href="#diversity">Diversidade e Inclusão</a></li>
+                    <li><a href="#accessibility">Acessibilidade</a></li>
+                    <li><a href="#host-resources">Recursos para Hosts</a></li>
+                    <li><a href="#guest-referrals">Indicação de Hóspedes</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Host</h3>
+                <ul>
+                    <li><a href="#host-home">Hospede sua casa</a></li>
+                    <li><a href="#host-experience">Hospede uma experiência</a></li>
+                    <li><a href="#responsible-hosting">Hospedagem responsável</a></li>
+                    <li><a href="#resource-center">Centro de recursos</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Suporte</h3>
+                <ul>
+                    <li><a href="#help-center">Central de ajuda</a></li>
+                    <li><a href="#safety">Informações de segurança</a></li>
+                    <li><a href="#cancellation">Opções de cancelamento</a></li>
+                    <li><a href="#neighborhood">Suporte da vizinhança</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="footer-bottom-content">
+                <div class="footer-links">
+                    <a href="#privacy">Privacidade</a>
+                    <a href="#terms">Termos</a>
+                    <a href="#sitemap">Mapa do site</a>
+                    <a href="#details">Detalhes da empresa</a>
+                </div>
+                <div class="footer-info">
+                    <div class="language-currency">
+                        <button class="language-btn">🇧🇷 Português (BR)</button>
+                        <button class="currency-btn">R$ BRL</button>
+                    </div>
+                    <div class="social-links">
+                        <a href="#facebook"><i class="fab fa-facebook"></i></a>
+                        <a href="#twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#instagram"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-copyright">
+                <p>&copy; 2025 CasaGo, Inc. Todos os direitos reservados · Feito com ❤️ no Brasil</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Carregar JS Corrigido -->
+    <script>
+        // Combinar os dois arquivos JS em um só
+        // PRIMEIRA PARTE DO JS
+    </script>
+    <script src="app-corrigido.js"></script>
+    <script src="app-corrigido-parte2.js"></script>
+</body>
+</html>
